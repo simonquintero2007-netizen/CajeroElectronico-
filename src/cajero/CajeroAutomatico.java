@@ -294,26 +294,23 @@ public class CajeroAutomatico extends JFrame {
         HashMap<Integer, Integer> entrega = new HashMap<>();
                  int restante = monto; 
                  
-        // Se empieza con 0 billetes de cada denominación
         for (int denominacion : DENOMINACIONES) {
             entrega.put(denominacion, 0);
         }
 
-        // REGLA ESPECIAL: retiro de 50.000 -> 2 de 20.000 y 1 de 10.000
         if (monto == 50000 && hayBilletes(20000, 2) && hayBilletes(10000, 1)) {
             entrega.put(20000, 2);
             entrega.put(10000, 1);
             return entrega;
         }
 
-        // REGLA ESPECIAL: retiro de 100.000 o más -> paquete base
-        // (1 de 50.000, 2 de 20.000 y 1 de 10.000 = 100.000)
+  
         if (monto >= 100000 && hayBilletes(50000, 1)
                 && hayBilletes(20000, 2) && hayBilletes(10000, 1)) {
             entrega.put(50000, 1);
             entrega.put(20000, 2);
             entrega.put(10000, 1);
-            restante -= 100000; // lo que falta se completa con el algoritmo normal
+            restante -= 100000;
         }
 
         for (int i = DENOMINACIONES.length - 1; i >= 0; i--) {
@@ -339,8 +336,8 @@ public class CajeroAutomatico extends JFrame {
           return entrega;
     }
                      
-    // Dice si el cajero tiene al menos esa cantidad de billetes de una denominación
     private boolean hayBilletes(int denominacion, int cantidad) {
+        
         return billetes.get(denominacion) >= cantidad;
     }
 
@@ -349,10 +346,14 @@ public class CajeroAutomatico extends JFrame {
         
                    for (int i = DENOMINACIONES.length - 1; i >= 0; i--) {
                      int denominacion = DENOMINACIONES[i];
+                     
             
                      int cantidad = entrega.get(denominacion);
                      
+                     
             if (cantidad > 0) {
+                
+                
                 texto.append(cantidad).append(" de $ ")
                         
                         
