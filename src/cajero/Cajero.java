@@ -6,8 +6,8 @@ public class Cajero {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            CajeroAutomatico cajero = new CajeroAutomatico(); // crea el cajero
-            cajero.setVisible(true);                          // muestra la ventana
+            CajeroAutomatico cajero = new CajeroAutomatico(); 
+            cajero.setVisible(true); 
         });
     }
 }

@@ -20,30 +20,33 @@ import javax.swing.table.DefaultTableModel;
 
 public class CajeroAutomatico extends JFrame {
 
-          private static final int[] DENOMINACIONES = {10000, 20000, 50000, 100000};
-       private static final int CANTIDAD_INICIAL = 100;
-          private static final int MAX_DIGITOS = 7;
-    
-            private HashMap<Integer, Integer> billetes = new HashMap<>();
-            private StringBuilder entrada = new StringBuilder();
+    private static final int[] DENOMINACIONES = {10000, 20000, 50000, 100000};
+    private static final int CANTIDAD_INICIAL = 100;
+    private static final int MAX_DIGITOS = 7;
+   
+    private static final int RETIRO_MINIMO = 10000;
+
+    private static final int RETIRO_MAXIMO = 1000000;
+
+    private HashMap<Integer, Integer> billetes = new HashMap<>();
+    private StringBuilder entrada = new StringBuilder();
 
     // Sirve para mostrar los números con puntos de miles
-         private NumberFormat formato = NumberFormat.getInstance(Locale.forLanguageTag("es-CO"));
+    private NumberFormat formato = NumberFormat.getInstance(Locale.forLanguageTag("es-CO"));
 
     // INTERFAZ 
-      private JTextArea pantalla;         // pantalla donde se escribe y se muestran resultados
-      
+    private JTextArea pantalla;         // pantalla donde se escribe y se muestran resultados
+
     private JTable tabla;                    // tabla de billetes
-    
-    
+
     private DefaultTableModel modeloTabla;   // datos de la tabla (filas y columnas)
     private JLabel lblTotal;                 // texto con el total de dinero del cajero
 
     public CajeroAutomatico() {
-                 inicializarBilletes();   
-                  construirInterfaz();     
-           actualizarTabla();      
-         mostrarEntrada();      
+        inicializarBilletes();
+        construirInterfaz();
+        actualizarTabla();
+        mostrarEntrada();
 
         setTitle("Cajero Electrónico");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -53,9 +56,9 @@ public class CajeroAutomatico extends JFrame {
     }
 
     private void inicializarBilletes() {
-              for (int denominacion : DENOMINACIONES) {
-                 
-                  billetes.put(denominacion, CANTIDAD_INICIAL);
+        for (int denominacion : DENOMINACIONES) {
+
+            billetes.put(denominacion, CANTIDAD_INICIAL);
         }
     }
 
@@ -87,9 +90,9 @@ public class CajeroAutomatico extends JFrame {
         // cuadrícula de 4 filas x 3 columnas, con 5 px de separación
         JPanel panel = new JPanel(new GridLayout(4, 3, 5, 5));
         String[] teclas = {"7", "8", "9",
-                           "4", "5", "6",
-                           "1", "2", "3",
-                           "0", "00", "000"};
+            "4", "5", "6",
+            "1", "2", "3",
+            "0", "00", "000"};
 
         //botón por cada tecla
         for (String tecla : teclas) {
@@ -105,17 +108,14 @@ public class CajeroAutomatico extends JFrame {
         JPanel panel = new JPanel(new GridLayout(3, 1, 5, 5)); // 3 filas, 1 columna
         panel.setPreferredSize(new Dimension(130, 0));         // ancho fijo de 130 px
 
-         
         JButton btnRetirar = crearBoton("Retirar");
-        
-                JButton btnLimpiar = crearBoton("Limpiar");
-        
-        
-         
-        JButton btnBorrar = crearBoton("Borrar");
 
+        JButton btnLimpiar = crearBoton("Limpiar");
+
+        JButton btnBorrar = crearBoton("Borrar");
+        btnRetirar.addActionListener(e -> retirar());
         btnLimpiar.addActionListener(e -> limpiar());
-                   btnBorrar.addActionListener(e -> retroceso());
+        btnBorrar.addActionListener(e -> retroceso());
 
         panel.add(btnRetirar);
         panel.add(btnLimpiar);
@@ -124,12 +124,12 @@ public class CajeroAutomatico extends JFrame {
     }
 
     private JPanel crearPanelTabla() {
-            modeloTabla = new DefaultTableModel(
-                           new String[]{"Denominación", "Cantidad", "Valor total"}, 0) {
-                               
-                       public boolean isCellEditable(int fila, int columna) {
-                      
-                           return false;
+        modeloTabla = new DefaultTableModel(
+                new String[]{"Denominación", "Cantidad", "Valor total"}, 0) {
+
+            public boolean isCellEditable(int fila, int columna) {
+
+                return false;
             }
         };
 
@@ -156,25 +156,21 @@ public class CajeroAutomatico extends JFrame {
     }
 
     //TABLA
-   
     private void actualizarTabla() {
-        modeloTabla.setRowCount(0); 
-        long totalCajero = 0;       
+        modeloTabla.setRowCount(0);
+        long totalCajero = 0;
 
         for (int denominacion : DENOMINACIONES) {
-                 int cantidad = billetes.get(denominacion);   
-            
-            
-            long valorTotal = (long) denominacion * cantidad; 
-            
+            int cantidad = billetes.get(denominacion);
+
+            long valorTotal = (long) denominacion * cantidad;
+
             totalCajero += valorTotal;
 
-                   modeloTabla.addRow(new Object[]{
+            modeloTabla.addRow(new Object[]{
                 "$ " + formato.format(denominacion),
-                       
-                       
                 cantidad,
-                           "$ " + formato.format(valorTotal)
+                "$ " + formato.format(valorTotal)
             });
         }
         lblTotal.setText("Total en el cajero: $ " + formato.format(totalCajero));
@@ -182,11 +178,11 @@ public class CajeroAutomatico extends JFrame {
 
     //PANTALLA Y TECLADO
     private void agregarDigitos(String digitos) {
-               if (entrada.length() + digitos.length() > MAX_DIGITOS) {
+        if (entrada.length() + digitos.length() > MAX_DIGITOS) {
             return;
-        }          
-               
-               if (entrada.length() == 0 && digitos.startsWith("0")) {
+        }
+
+        if (entrada.length() == 0 && digitos.startsWith("0")) {
             return;
         }
         entrada.append(digitos);
@@ -207,9 +203,137 @@ public class CajeroAutomatico extends JFrame {
 
     private void mostrarEntrada() {
         String valor = "0";
+        
+        
         if (entrada.length() > 0) {
-            valor = formato.format(Long.parseLong(entrada.toString()));
+            
+                   valor = formato.format(Long.parseLong(entrada.toString()));
         }
-        pantalla.setText("Valor a retirar:\n$ " + valor);
+           pantalla.setText("Valor a retirar:\n$ " + valor);
+    } 
+        
+   
+    private void retirar() {
+        
+        
+        
+        
+        if (entrada.length() == 0) {
+          
+            
+            mostrarMensaje("Error: digite el valor a retirar.");
+            return;
+        }
+
+        int monto = Integer.parseInt(entrada.toString());
+
+  
+        if (monto % 10 != 0) {
+            
+                       mostrarMensaje("Error: el valor debe ser múltiplo de 10.");
+            return;
+        }
+
+        if (monto < RETIRO_MINIMO) {
+            
+            
+                     mostrarMensaje("Error: el retiro minimo es de $ " + formato.format(RETIRO_MINIMO));
+            return;
+        }
+        if (monto > RETIRO_MAXIMO) {
+           
+                       mostrarMensaje("Error: el retiro maximo es de $ " + formato.format(RETIRO_MAXIMO));
+            return;
+        }
+
+        if (monto > calcularTotalCajero()) {
+            
+            
+                        mostrarMensaje("Error: el cajero no tiene saldo suficiente.");
+            return;
+        }
+
+        HashMap<Integer, Integer> entrega = calcularEntrega(monto);
+                 
+              if (entrega == null) {
+           
+            
+            
+            mostrarMensaje("Error: no se puede entregar $ " + formato.format(monto)
+                    + " con los billetes disponibles.");
+            return;
+        }
+
+        mostrarMensaje("Billetes a entregar:\n" + armarDistribucion(entrega));
     }
+
+   
+          private int calcularTotalCajero() {
+           
+              int total = 0;
+
+        for (int denominacion : DENOMINACIONES) {
+            
+             
+                   int cantidad = billetes.get(denominacion);
+                    total += denominacion * cantidad;
+        }
+        return total;
+    }
+
+ 
+    private void mostrarMensaje(String mensaje) {
+        
+        pantalla.setText(mensaje);
+    }
+    
+
+ 
+                     private HashMap<Integer, Integer> calcularEntrega(int monto) {
+        
+        HashMap<Integer, Integer> entrega = new HashMap<>();
+                 int restante = monto; 
+
+        for (int i = DENOMINACIONES.length - 1; i >= 0; i--) {
+            int denominacion = DENOMINACIONES[i];
+            
+            
+                       int necesarios = restante / denominacion;
+             int disponibles = billetes.get(denominacion);
+             
+             
+            int usados = Math.min(necesarios, disponibles);
+
+                       entrega.put(denominacion, usados);
+                     restante -= usados * denominacion;
+        }
+
+        if (restante != 0) {
+            return null;
+        }
+        
+        
+        
+          return entrega;
+    }
+
+    private String armarDistribucion(HashMap<Integer, Integer> entrega) {
+                   StringBuilder texto = new StringBuilder();
+        
+                   for (int i = DENOMINACIONES.length - 1; i >= 0; i--) {
+                     int denominacion = DENOMINACIONES[i];
+            
+                     int cantidad = entrega.get(denominacion);
+                     
+            if (cantidad > 0) {
+                texto.append(cantidad).append(" de $ ")
+                        
+                        
+                        
+                        .append(formato.format(denominacion)).append("\n");
+            }
+        }
+        return texto.toString();
+    }
+
 }
