@@ -68,7 +68,7 @@ public class CajeroAutomatico extends JFrame {
         ((JPanel) getContentPane()).setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         // Pantalla
-        pantalla = new JTextArea(5, 25);   // 5 filas y 25 columnas
+        pantalla = new JTextArea(8, 25);   // 8 filas y 25 columnas;   // 5 filas y 25 columnas
         pantalla.setEditable(false);       // el usuario no puede escribir con el teclado del PC
         pantalla.setFont(new Font("Monospaced", Font.BOLD, 20));
         pantalla.setLineWrap(true);        // salta de línea si el texto es muy largo
@@ -264,7 +264,14 @@ public class CajeroAutomatico extends JFrame {
             return;
         }
 
-        mostrarMensaje("Billetes a entregar:\n" + armarDistribucion(entrega));
+              
+        descontarBilletes(entrega);
+        actualizarTabla();
+
+        mostrarMensaje("Retiro exitoso: $ " + formato.format(monto)
+                + "\n\nBilletes entregados:\n" + armarDistribucion(entrega));
+
+        entrada.setLength(0);
     }
 
    
@@ -334,6 +341,21 @@ public class CajeroAutomatico extends JFrame {
         
         
           return entrega;
+    }
+                     
+    
+    private void descontarBilletes(HashMap<Integer, Integer> entrega) {
+                  for (int denominacion : DENOMINACIONES) {
+            
+            
+            
+                    int nuevaCantidad = billetes.get(denominacion) - entrega.get(denominacion);
+           
+                                  billetes.put(denominacion, nuevaCantidad);
+        }
+                  
+                  
+                  
     }
                      
     private boolean hayBilletes(int denominacion, int cantidad) {
